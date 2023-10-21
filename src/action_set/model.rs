@@ -4,12 +4,14 @@ use steamworks_sys::{
   InputAnalogActionData_t, InputDigitalActionData_t, InputDigitalActionHandle_t, InputHandle_t,
 };
 
+#[derive(Clone, Debug)]
 pub enum ActionData {
   Analog(Option<InputAnalogActionData_t>),
   Digital(Option<InputDigitalActionData_t>),
 }
 
 // TODO: add `enabled`
+#[derive(Clone, Debug)]
 pub struct Action {
   pub handle: InputDigitalActionHandle_t,
   pub data: ActionData,
