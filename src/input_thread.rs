@@ -1,29 +1,28 @@
 use std::{thread, time::Duration};
-use steamworks::{Client, SingleClient};
+use steamworks::{Client, SResult, SingleClient};
 
-fn pool<T, F>(single: &SingleClient, interval_ms: u64, f: F) -> T
+/// Run a function until it returns a value.
+/// If the function returns `None`, wait for the specified interval and run the Steam callbacks.
+fn pool<R, F>(single: &SingleClient, interval_ms: u64, f: F) -> R
 where
-  F: Fn() -> Option<T>,
+  F: Fn() -> Option<R>,
 {
   loop {
-    single.run_callbacks();
-
+    // call the function immediately, in case it can return a value without waiting
     match f() {
-      Some(v) => {
-        return v;
-      }
+      Some(r) => return r,
       None => {}
     }
 
     thread::sleep(Duration::from_millis(interval_ms));
+    single.run_callbacks();
   }
 }
 
-pub fn spawn() {
-  thread::spawn(|| {
-    // TODO: replace 480 with the real AppID
-    let (client, single) = Client::init_app(480).unwrap();
+pub fn spawn(app_id: u32) -> SResult<()> {
+  let (client, single) = Client::init_app(app_id)?;
 
+  thread::spawn(move || {
     let input = client.input();
     input.init(false);
 
@@ -62,4 +61,6 @@ pub fn spawn() {
       Option::<()>::None // run forever
     });
   });
+
+  Ok(())
 }

@@ -4,7 +4,8 @@ use iced::executor;
 use iced::{Application, Command, Element, Settings, Theme};
 
 pub fn main() -> iced::Result {
-  input_thread::spawn();
+  // TODO: replace 480 with the real AppID
+  input_thread::spawn(480).unwrap();
 
   Hello::run(Settings::default())
 }
