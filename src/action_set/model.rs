@@ -9,6 +9,7 @@ pub enum ActionData {
   Digital(Option<InputDigitalActionData_t>),
 }
 
+// TODO: add `enabled`
 pub struct Action {
   pub handle: InputDigitalActionHandle_t,
   pub data: ActionData,
