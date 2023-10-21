@@ -1,7 +1,25 @@
 use iced::executor;
 use iced::{Application, Command, Element, Settings, Theme};
 use std::{thread, time::Duration};
-use steamworks::Client;
+use steamworks::{Client, SingleClient};
+
+fn pool<T, F>(single: &SingleClient, interval_ms: u64, f: F) -> T
+where
+  F: Fn() -> Option<T>,
+{
+  loop {
+    single.run_callbacks();
+
+    match f() {
+      Some(v) => {
+        return v;
+      }
+      None => {}
+    }
+
+    thread::sleep(Duration::from_millis(interval_ms));
+  }
+}
 
 pub fn main() -> iced::Result {
   thread::spawn(|| {
@@ -11,49 +29,40 @@ pub fn main() -> iced::Result {
     let input = client.input();
     input.init(false);
 
-    let (fps_controls_action_set, attack_action_handle, attack2_action_handle) = loop {
-      single.run_callbacks();
-      let fps_controls_action_set = input.get_action_set_handle("FPSControls");
-      let attack_action_handle = input.get_digital_action_handle("attack");
-      let attack2_action_handle = input.get_digital_action_handle("attack2");
+    let (fps_controls_action_set, attack_action_handle, attack2_action_handle) =
+      pool(&single, 100, || {
+        let fps_controls_action_set = input.get_action_set_handle("FPSControls");
+        let attack_action_handle = input.get_digital_action_handle("attack");
+        let attack2_action_handle = input.get_digital_action_handle("attack2");
 
-      println!("fps_controls_action_set: {:?}", fps_controls_action_set);
-      println!("attack_action_handle: {:?}", attack_action_handle);
-      println!("attack2_action_handle: {:?}", attack2_action_handle);
+        if fps_controls_action_set != 0 && attack_action_handle != 0 && attack2_action_handle != 0 {
+          println!("action set ready");
+          return Some((
+            fps_controls_action_set,
+            attack_action_handle,
+            attack2_action_handle,
+          ));
+        }
+        return None;
+      });
 
-      if fps_controls_action_set != 0 && attack_action_handle != 0 && attack2_action_handle != 0 {
-        break (
-          fps_controls_action_set,
-          attack_action_handle,
-          attack2_action_handle,
-        );
-      }
-      // TODO: replace 1000 with the real frame rate
-      thread::sleep(Duration::from_millis(1000));
-    };
-
-    let input_handles = loop {
-      single.run_callbacks();
+    let input_handles = pool(&single, 300, || {
       let handles = input.get_connected_controllers();
-      println!("input_handles: {:?}", handles);
       if !handles.is_empty() {
-        break handles;
+        println!("num of input handles: {:?}", handles.len());
+        return Some(handles);
       }
-      // TODO: replace 1000 with the real frame rate
-      thread::sleep(Duration::from_millis(1000));
-    };
+      return None;
+    });
 
     input.activate_action_set_handle(input_handles[0], fps_controls_action_set);
 
-    loop {
-      single.run_callbacks();
-
+    // TODO: replace 1000 with the real interval
+    pool(&single, 1000, || {
       let value = input.get_digital_action_data(input_handles[0], attack_action_handle);
       println!("attack: {}", value.bState);
-
-      // TODO: replace 1000 with the real frame rate
-      thread::sleep(Duration::from_millis(1000));
-    }
+      Option::<()>::None // run forever
+    });
   });
 
   Hello::run(Settings::default())
