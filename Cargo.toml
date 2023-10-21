@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 steamworks = "0.10.0"
+iced = "0.10"
