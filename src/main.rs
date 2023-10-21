@@ -7,7 +7,8 @@ use iced::{Application, Command, Element, Settings, Theme};
 
 pub fn main() -> iced::Result {
   // TODO: replace 480 with the real AppID
-  input_thread::spawn(480).unwrap();
+  // TODO: replace 1000 with the real interval
+  input_thread::spawn(480, 1000).unwrap();
 
   Hello::run(Settings::default())
 }

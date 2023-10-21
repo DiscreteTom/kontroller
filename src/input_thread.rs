@@ -20,7 +20,7 @@ where
   }
 }
 
-pub fn spawn(app_id: u32) -> SResult<()> {
+pub fn spawn(app_id: u32, interval: u64) -> SResult<()> {
   let (client, single) = Client::init_app(app_id)?;
 
   thread::spawn(move || {
@@ -32,7 +32,7 @@ pub fn spawn(app_id: u32) -> SResult<()> {
       Err(_) => None,
     });
 
-    let input_handles = pool(&single, 300, || {
+    let input_handles = pool(&single, 100, || {
       let handles = input.get_connected_controllers();
       if !handles.is_empty() {
         println!("num of input handles: {:?}", handles.len());
@@ -43,8 +43,7 @@ pub fn spawn(app_id: u32) -> SResult<()> {
 
     input.activate_action_set_handle(input_handles[0], all_deck_ctrl.handle);
 
-    // TODO: replace 1000 with the real interval
-    pool(&single, 1000, || {
+    pool(&single, interval, || {
       let value = input.get_digital_action_data(input_handles[0], all_deck_ctrl.btn_a);
       println!("btn_a: {}", value.bState);
       Option::<()>::None // run forever
