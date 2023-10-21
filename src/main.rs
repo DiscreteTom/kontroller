@@ -23,7 +23,8 @@ impl Application for Hello {
   }
 
   fn title(&self) -> String {
-    String::from("A cool application")
+    // TODO: update title by action set
+    String::from("Kontroller - All Deck Controls")
   }
 
   fn update(&mut self, _message: Self::Message) -> Command<Self::Message> {
