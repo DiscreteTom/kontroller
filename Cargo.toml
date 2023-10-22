@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 steamworks-sys = "0.10.0"
 steamworks = "0.10.0"
-iced = "0.10"
+iced = {version = "0.10", features = ["smol"]}
