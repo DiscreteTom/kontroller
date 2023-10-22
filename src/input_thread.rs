@@ -1,4 +1,4 @@
-use crate::action_set::{all_deck_ctrl::AllDeckControls, model::ActionData};
+use crate::action_set::all_deck_ctrl::AllDeckControls;
 use std::{thread, time::Duration};
 use steamworks::{Client, SResult, SingleClient};
 
@@ -47,16 +47,9 @@ pub fn spawn(app_id: u32, interval: u64) -> SResult<()> {
       all_deck_ctrl.update(&input, input_handles[0]);
 
       // for debug
-      match all_deck_ctrl.btn_a.borrow().data {
-        ActionData::Digital(Some(data)) => {
-          if data.bState {
-            println!("btn_a pressed");
-          }
-        }
-        _ => {}
-      }
+      println!("btn_a: {:?}", all_deck_ctrl.btn_a.borrow().data);
 
-      Option::<()>::None // run forever
+      None as Option<()> // run forever
     });
   });
 

@@ -1,50 +1,89 @@
 use crate::utils::check_handle;
+use std::{cell::RefCell, rc::Rc};
 use steamworks::{ClientManager, Input};
 use steamworks_sys::{
   InputAnalogActionData_t, InputDigitalActionData_t, InputDigitalActionHandle_t, InputHandle_t,
 };
 
-#[derive(Clone, Debug)]
-pub enum ActionData {
-  Analog(Option<InputAnalogActionData_t>),
-  Digital(Option<InputDigitalActionData_t>),
+pub trait Action {
+  /// Refresh the action data.
+  fn update(&mut self, input: &Input<ClientManager>, input_handle: InputHandle_t);
 }
 
-// TODO: add `enabled`
+// TODO: add `enabled`?
 #[derive(Clone, Debug)]
-pub struct Action {
+pub struct AnalogAction {
   pub handle: InputDigitalActionHandle_t,
-  pub data: ActionData,
+  pub data: Option<InputAnalogActionData_t>,
 }
 
-impl Action {
+#[derive(Clone, Debug)]
+pub struct DigitalAction {
+  pub handle: InputDigitalActionHandle_t,
+  pub data: Option<InputDigitalActionData_t>,
+}
+
+impl AnalogAction {
   /// Create a new analog action.
   /// Return `Ok` if the handle is valid.
-  pub fn analog(input: &Input<ClientManager>, action_name: &str) -> Result<Self, ()> {
+  pub fn new(input: &Input<ClientManager>, action_name: &str) -> Result<Self, ()> {
     Ok(Self {
       handle: check_handle(input.get_analog_action_handle(action_name))?,
-      data: ActionData::Analog(None),
+      data: None,
     })
   }
+}
 
-  /// Create a new digital action.
-  /// Return `Ok` if the handle is valid.
-  pub fn digital(input: &Input<ClientManager>, action_name: &str) -> Result<Self, ()> {
+/// Create a new digital action.
+/// Return `Ok` if the handle is valid.
+impl DigitalAction {
+  pub fn new(input: &Input<ClientManager>, action_name: &str) -> Result<Self, ()> {
     Ok(Self {
       handle: check_handle(input.get_digital_action_handle(action_name))?,
-      data: ActionData::Digital(None),
+      data: None,
     })
   }
+}
 
-  /// Update the action data.
+impl Action for AnalogAction {
+  fn update(&mut self, input: &Input<ClientManager>, input_handle: InputHandle_t) {
+    self.data = Some(input.get_analog_action_data(input_handle, self.handle));
+  }
+}
+
+impl Action for DigitalAction {
+  fn update(&mut self, input: &Input<ClientManager>, input_handle: InputHandle_t) {
+    self.data = Some(input.get_digital_action_data(input_handle, self.handle));
+  }
+}
+
+pub struct ActionRepo {
+  pub actions: Vec<Rc<RefCell<dyn Action>>>,
+}
+
+impl ActionRepo {
+  pub fn new() -> Self {
+    Self {
+      actions: Vec::new(),
+    }
+  }
+
+  /// Append the action to the repo and return the action.
+  pub fn append<T>(&mut self, action: T) -> Rc<RefCell<T>>
+  where
+    T: Action + 'static,
+  {
+    let rc = Rc::new(RefCell::new(action));
+    self.actions.push(rc.clone());
+    rc
+  }
+
   pub fn update(&mut self, input: &Input<ClientManager>, input_handle: InputHandle_t) {
-    match &mut self.data {
-      ActionData::Analog(data) => {
-        *data = Some(input.get_analog_action_data(input_handle, self.handle));
-      }
-      ActionData::Digital(data) => {
-        *data = Some(input.get_digital_action_data(input_handle, self.handle));
-      }
+    for action in &mut self.actions {
+      action.borrow_mut().update(input, input_handle);
     }
   }
 }
+
+pub type WrappedDigitalAction = Rc<RefCell<DigitalAction>>;
+pub type WrappedAnalogAction = Rc<RefCell<AnalogAction>>;
