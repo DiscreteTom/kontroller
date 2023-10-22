@@ -1,40 +1,19 @@
 mod action_set;
 mod input_thread;
+mod ui_thread;
 mod utils;
 
-use iced::executor;
-use iced::{Application, Command, Element, Settings, Theme};
+use std::sync::mpsc;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 pub fn main() -> iced::Result {
+  let update_lock = Arc::new(Mutex::new(false));
+  let (tx, rx) = mpsc::channel::<String>();
+
   // TODO: replace 480 with the real AppID
   // TODO: replace 1000 with the real interval
-  input_thread::spawn(480, 1000).unwrap();
+  input_thread::spawn(480, 10, update_lock.clone(), tx).unwrap();
 
-  Hello::run(Settings::default())
-}
-
-struct Hello {}
-
-impl Application for Hello {
-  type Executor = executor::Default;
-  type Flags = ();
-  type Message = ();
-  type Theme = Theme;
-
-  fn new(_flags: ()) -> (Hello, Command<Self::Message>) {
-    (Hello {}, Command::none())
-  }
-
-  fn title(&self) -> String {
-    // TODO: update title by action set
-    String::from("Kontroller - All Deck Controls")
-  }
-
-  fn update(&mut self, _message: Self::Message) -> Command<Self::Message> {
-    Command::none()
-  }
-
-  fn view(&self) -> Element<Self::Message> {
-    "Hello, world!".into()
-  }
+  ui_thread::run(30, update_lock, rx)
 }

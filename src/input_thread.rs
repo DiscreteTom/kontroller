@@ -1,5 +1,9 @@
 use crate::action_set::all_deck_ctrl::AllDeckControls;
-use std::{thread, time::Duration};
+use std::{
+  sync::{mpsc, Arc, Mutex},
+  thread,
+  time::Duration,
+};
 use steamworks::{Client, ClientManager, Input, SResult, SingleClient};
 use steamworks_sys::InputHandle_t;
 
@@ -38,7 +42,12 @@ fn pool_input_handles(
   })
 }
 
-pub fn spawn(app_id: u32, interval: u64) -> SResult<()> {
+pub fn spawn(
+  app_id: u32,
+  interval_ms: u64,
+  update_lock: Arc<Mutex<bool>>,
+  tx: mpsc::Sender<String>,
+) -> SResult<()> {
   let (client, single) = Client::init_app(app_id)?;
 
   thread::spawn(move || {
@@ -54,11 +63,24 @@ pub fn spawn(app_id: u32, interval: u64) -> SResult<()> {
 
     input.activate_action_set_handle(input_handles[0], all_deck_ctrl.handle);
 
-    pool(&single, interval, || {
+    pool(&single, interval_ms, || {
       all_deck_ctrl.update(&input, input_handles[0]);
 
-      // for debug
-      println!("btn_a: {:?}", all_deck_ctrl.btn_a.borrow().data);
+      let mut update = update_lock.lock().unwrap();
+      if *update {
+        // UI requested update
+        tx.send(
+          all_deck_ctrl
+            .repo
+            .actions
+            .iter()
+            .map(|a| a.borrow().to_string())
+            .collect::<Vec<String>>()
+            .join("\n"),
+        )
+        .unwrap();
+        *update = false;
+      }
 
       None as Option<()> // run forever
     });

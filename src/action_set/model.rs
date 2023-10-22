@@ -8,6 +8,8 @@ use steamworks_sys::{
 pub trait Action {
   /// Refresh the action data.
   fn update(&mut self, input: &Input<ClientManager>, input_handle: InputHandle_t);
+  /// Return a string representation of the action data.
+  fn to_string(&self) -> String;
 }
 
 // TODO: add `enabled`?
@@ -49,11 +51,31 @@ impl Action for AnalogAction {
   fn update(&mut self, input: &Input<ClientManager>, input_handle: InputHandle_t) {
     self.data = Some(input.get_analog_action_data(input_handle, self.handle));
   }
+
+  fn to_string(&self) -> String {
+    format!(
+      "{:?}",
+      match self.data {
+        Some(data) => data,
+        None => return String::from("None"),
+      }
+    )
+  }
 }
 
 impl Action for DigitalAction {
   fn update(&mut self, input: &Input<ClientManager>, input_handle: InputHandle_t) {
     self.data = Some(input.get_digital_action_data(input_handle, self.handle));
+  }
+
+  fn to_string(&self) -> String {
+    format!(
+      "{:?}",
+      match self.data {
+        Some(data) => data,
+        None => return String::from("None"),
+      }
+    )
   }
 }
 
