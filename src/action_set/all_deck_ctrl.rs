@@ -35,30 +35,30 @@ pub struct AllDeckControls {
 impl AllDeckControls {
   /// Return `Ok` if all handles are valid.
   pub fn new(input: &Input<ClientManager>) -> Result<Self, ()> {
-    let mut actions = ActionRepo::new();
+    let mut repo = ActionRepo::new();
     Ok(Self {
       handle: check_handle(input.get_action_set_handle("AllDeckControls"))?,
-      btn_a: actions.append(DigitalAction::new(input, "btn_a")?),
-      btn_b: actions.append(DigitalAction::new(input, "btn_b")?),
-      btn_x: actions.append(DigitalAction::new(input, "btn_x")?),
-      btn_y: actions.append(DigitalAction::new(input, "btn_y")?),
-      btn_lb: actions.append(DigitalAction::new(input, "btn_lb")?),
-      btn_rb: actions.append(DigitalAction::new(input, "btn_rb")?),
-      btn_l4: actions.append(DigitalAction::new(input, "btn_l4")?),
-      btn_r4: actions.append(DigitalAction::new(input, "btn_r4")?),
-      btn_l5: actions.append(DigitalAction::new(input, "btn_l5")?),
-      btn_r5: actions.append(DigitalAction::new(input, "btn_r5")?),
-      btn_start: actions.append(DigitalAction::new(input, "btn_start")?),
-      btn_select: actions.append(DigitalAction::new(input, "btn_select")?),
-      lt: actions.append(AnalogAction::new(input, "left_trigger")?),
-      rt: actions.append(AnalogAction::new(input, "right_trigger")?),
-      move1: actions.append(AnalogAction::new(input, "Move1")?),
-      move2: actions.append(AnalogAction::new(input, "Move2")?),
-      move3: actions.append(AnalogAction::new(input, "Move3")?),
-      mouse1: actions.append(AnalogAction::new(input, "Mouse1")?),
-      mouse2: actions.append(AnalogAction::new(input, "Mouse2")?),
-      mouse3: actions.append(AnalogAction::new(input, "Mouse3")?),
-      repo: actions,
+      btn_a: repo.append(DigitalAction::new(input, "btn_a")?),
+      btn_b: repo.append(DigitalAction::new(input, "btn_b")?),
+      btn_x: repo.append(DigitalAction::new(input, "btn_x")?),
+      btn_y: repo.append(DigitalAction::new(input, "btn_y")?),
+      btn_lb: repo.append(DigitalAction::new(input, "btn_lb")?),
+      btn_rb: repo.append(DigitalAction::new(input, "btn_rb")?),
+      btn_l4: repo.append(DigitalAction::new(input, "btn_l4")?),
+      btn_r4: repo.append(DigitalAction::new(input, "btn_r4")?),
+      btn_l5: repo.append(DigitalAction::new(input, "btn_l5")?),
+      btn_r5: repo.append(DigitalAction::new(input, "btn_r5")?),
+      btn_start: repo.append(DigitalAction::new(input, "btn_start")?),
+      btn_select: repo.append(DigitalAction::new(input, "btn_select")?),
+      lt: repo.append(AnalogAction::new(input, "left_trigger")?),
+      rt: repo.append(AnalogAction::new(input, "right_trigger")?),
+      move1: repo.append(AnalogAction::new(input, "Move1")?),
+      move2: repo.append(AnalogAction::new(input, "Move2")?),
+      move3: repo.append(AnalogAction::new(input, "Move3")?),
+      mouse1: repo.append(AnalogAction::new(input, "Mouse1")?),
+      mouse2: repo.append(AnalogAction::new(input, "Mouse2")?),
+      mouse3: repo.append(AnalogAction::new(input, "Mouse3")?),
+      repo,
     })
   }
 
