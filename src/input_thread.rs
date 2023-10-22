@@ -1,6 +1,7 @@
 use crate::action_set::all_deck_ctrl::AllDeckControls;
 use std::{thread, time::Duration};
-use steamworks::{Client, SResult, SingleClient};
+use steamworks::{Client, ClientManager, Input, SResult, SingleClient};
+use steamworks_sys::InputHandle_t;
 
 /// Run a function until it returns a value.
 /// If the function returns `None`, wait for the specified interval and run the Steam callbacks.
@@ -20,6 +21,23 @@ where
   }
 }
 
+/// Pool to get connected controller handles.
+fn pool_input_handles(
+  single: &SingleClient,
+  input: &Input<ClientManager>,
+  interval_ms: u64,
+) -> Vec<InputHandle_t> {
+  pool(&single, interval_ms, || {
+    let handles = input.get_connected_controllers();
+    if !handles.is_empty() {
+      println!("num of input handles: {:?}", handles.len());
+      return Some(handles);
+    }
+    println!("no input handles, retrying...");
+    return None;
+  })
+}
+
 pub fn spawn(app_id: u32, interval: u64) -> SResult<()> {
   let (client, single) = Client::init_app(app_id)?;
 
@@ -32,14 +50,7 @@ pub fn spawn(app_id: u32, interval: u64) -> SResult<()> {
       Err(_) => None,
     });
 
-    let input_handles = pool(&single, 100, || {
-      let handles = input.get_connected_controllers();
-      if !handles.is_empty() {
-        println!("num of input handles: {:?}", handles.len());
-        return Some(handles);
-      }
-      return None;
-    });
+    let input_handles = pool_input_handles(&single, &input, 100);
 
     input.activate_action_set_handle(input_handles[0], all_deck_ctrl.handle);
 
