@@ -15,12 +15,14 @@ pub trait Action {
 // TODO: add `enabled`?
 #[derive(Clone, Debug)]
 pub struct AnalogAction {
+  pub name: String,
   pub handle: InputDigitalActionHandle_t,
   pub data: Option<InputAnalogActionData_t>,
 }
 
 #[derive(Clone, Debug)]
 pub struct DigitalAction {
+  pub name: String,
   pub handle: InputDigitalActionHandle_t,
   pub data: Option<InputDigitalActionData_t>,
 }
@@ -30,6 +32,7 @@ impl AnalogAction {
   /// Return `Ok` if the handle is valid.
   pub fn new(input: &Input<ClientManager>, action_name: &str) -> Result<Self, ()> {
     Ok(Self {
+      name: String::from(action_name),
       handle: check_handle(input.get_analog_action_handle(action_name))?,
       data: None,
     })
@@ -41,6 +44,7 @@ impl AnalogAction {
 impl DigitalAction {
   pub fn new(input: &Input<ClientManager>, action_name: &str) -> Result<Self, ()> {
     Ok(Self {
+      name: String::from(action_name),
       handle: check_handle(input.get_digital_action_handle(action_name))?,
       data: None,
     })
@@ -54,7 +58,8 @@ impl Action for AnalogAction {
 
   fn to_string(&self) -> String {
     format!(
-      "{:?}",
+      "{}: {:?}",
+      self.name,
       match self.data {
         Some(data) => data,
         None => return String::from("None"),
@@ -70,7 +75,8 @@ impl Action for DigitalAction {
 
   fn to_string(&self) -> String {
     format!(
-      "{:?}",
+      "{}: {:?}",
+      self.name,
       match self.data {
         Some(data) => data,
         None => return String::from("None"),
