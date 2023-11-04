@@ -1,7 +1,9 @@
 use iced::executor;
 use iced::time;
+use iced::widget::{button, column, text};
+use iced::Element;
 use iced::Settings;
-use iced::{Application, Command, Element, Theme};
+use iced::{Application, Command, Theme};
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -10,6 +12,7 @@ use std::time::Duration;
 #[derive(Debug, Clone)]
 enum Message {
   Update,
+  Exit,
 }
 
 struct Flags {
@@ -54,13 +57,20 @@ impl Application for App {
         self.set_update();
         self.content = self.flags.rx.recv().unwrap();
       }
+      Message::Exit => {
+        std::process::exit(0);
+      }
     }
 
     Command::none()
   }
 
-  fn view(&self) -> Element<Self::Message> {
-    self.content.as_str().into()
+  fn view(&self) -> Element<Message> {
+    column![
+      button("Exit").on_press(Message::Exit),
+      text(&self.content).size(5)
+    ]
+    .into()
   }
 }
 
