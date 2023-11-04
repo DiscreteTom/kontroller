@@ -37,3 +37,6 @@ cargo build --release
   - The UI process should be the same as the main process.
 - Why the name is `Spacewar` and the app id is 480?
   - 480 is a commonly used app id for testing for steamworks developers. The name `Spacewar` is the name for the app with app id 480.
+- I tried to start the executable file on SteamDeck but no window shows up.
+  - Make sure you have `libsteam_api.so` in the PATH.
+  - Start the executable in a terminal and show me the output by opening an issue.
