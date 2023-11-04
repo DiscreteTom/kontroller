@@ -2,6 +2,7 @@ use iced::executor;
 use iced::time;
 use iced::widget::{button, column, text};
 use iced::Element;
+use iced::Length;
 use iced::Settings;
 use iced::{Application, Command, Theme};
 use std::sync::mpsc;
@@ -67,7 +68,9 @@ impl Application for App {
 
   fn view(&self) -> Element<Message> {
     column![
-      button("Exit").on_press(Message::Exit),
+      button(text("Exit").size(5))
+        .on_press(Message::Exit)
+        .width(Length::Fill),
       text(&self.content).size(5)
     ]
     .into()
