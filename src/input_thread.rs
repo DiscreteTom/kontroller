@@ -9,7 +9,7 @@ use steamworks_sys::InputHandle_t;
 
 /// Run a function until it returns a value.
 /// If the function returns `None`, wait for the specified interval and run the Steam callbacks.
-fn pool<R, F>(single: &SingleClient, interval_ms: u64, mut f: F) -> R
+fn poll<R, F>(single: &SingleClient, interval_ms: u64, mut f: F) -> R
 where
   F: FnMut() -> Option<R>,
 {
@@ -25,13 +25,13 @@ where
   }
 }
 
-/// Pool to get connected controller handles.
-fn pool_input_handles(
+/// Poll to get connected controller handles.
+fn poll_input_handles(
   single: &SingleClient,
   input: &Input<ClientManager>,
   interval_ms: u64,
 ) -> Vec<InputHandle_t> {
-  pool(&single, interval_ms, || {
+  poll(&single, interval_ms, || {
     let handles = input.get_connected_controllers();
     if !handles.is_empty() {
       println!("num of input handles: {:?}", handles.len());
@@ -54,16 +54,16 @@ pub fn spawn(
     let input = client.input();
     input.init(false);
 
-    let mut all_deck_ctrl = pool(&single, 100, || match AllDeckControls::new(&input) {
+    let mut all_deck_ctrl = poll(&single, 100, || match AllDeckControls::new(&input) {
       Ok(c) => Some(c),
       Err(_) => None,
     });
 
-    let input_handles = pool_input_handles(&single, &input, 100);
+    let input_handles = poll_input_handles(&single, &input, 100);
 
     input.activate_action_set_handle(input_handles[0], all_deck_ctrl.handle);
 
-    pool(&single, interval_ms, || {
+    poll(&single, interval_ms, || {
       all_deck_ctrl.update(&input, input_handles[0]);
 
       let mut update = update_lock.lock().unwrap();
