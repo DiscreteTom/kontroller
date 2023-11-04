@@ -1,5 +1,6 @@
 # kontroller
 
+[![version](https://img.shields.io/github/v/tag/DiscreteTom/kontroller?label=release&style=flat-square)](https://github.com/DiscreteTom/kontroller/releases/latest)
 ![license](https://img.shields.io/github/license/DiscreteTom/kontroller?style=flat-square)
 [![rust](https://img.shields.io/badge/built_with-rust-DEA584?style=flat-square)](https://github.com/DiscreteTom/retsac)
 
@@ -8,7 +9,7 @@ A demo project to read all SteamDeck input (including trackpad and gyro) via Ste
 ## Run
 
 1. Switch to Desktop Mode on SteamDeck.
-2. Download `kontroller` from release page, or [build](#build) it yourself. Put it in SteamDeck.
+2. Download `kontroller` from [release page](https://github.com/DiscreteTom/kontroller/releases/latest), or [build](#build) it yourself. Put it in SteamDeck.
 3. Put `redistributable_bin/libsteam_api.so` in the PATH (e.g. `/usr/lib`).
 4. Copy `kontroller.vdf` into `/home/deck/.local/share/Steam/controller_config` (create the folder if it doesn't exist), rename it to `game_actions_480.vdf`.
 5. Run `kontroller` on SteamDeck. This should open a new window, but your input can't be captured now. Close the window.
@@ -21,7 +22,7 @@ A demo project to read all SteamDeck input (including trackpad and gyro) via Ste
 > You'd better build the project on SteamDeck.
 
 ```bash
-cargo build
+cargo build --release
 ```
 
 ## FAQ
