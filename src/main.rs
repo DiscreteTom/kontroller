@@ -11,9 +11,17 @@ pub fn main() -> iced::Result {
   let update_lock = Arc::new(Mutex::new(false));
   let (tx, rx) = mpsc::channel::<String>();
 
-  // TODO: replace 480 with the real AppID
-  // TODO: replace 1000 with the real interval
-  input_thread::spawn(480, 10, update_lock.clone(), tx).unwrap();
+  input_thread::spawn(
+    480, // TODO: replace 480 with the real AppID
+    10,  // interval of polling input events
+    update_lock.clone(),
+    tx,
+  )
+  .unwrap();
 
-  ui_thread::run(30, update_lock, rx)
+  ui_thread::run(
+    30, // interval of updating UI
+    update_lock,
+    rx,
+  )
 }
