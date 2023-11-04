@@ -6,6 +6,8 @@
 
 A demo project to read all SteamDeck input (including trackpad and gyro) via SteamInput without using a game engine.
 
+![demo](./img/demo.gif)
+
 ## Run
 
 1. Switch to Desktop Mode on SteamDeck.
