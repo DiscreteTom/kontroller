@@ -42,3 +42,5 @@ cargo build --release
 - I tried to start the executable file on SteamDeck but no window shows up.
   - Make sure you have `libsteam_api.so` in the PATH.
   - Start the executable in a terminal and show me the output by opening an issue.
+- What if I just want to use joysticks and buttons?
+  - That is much easier. See my another project [stickdeck](https://github.com/DiscreteTom/stickdeck).
