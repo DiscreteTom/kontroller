@@ -15,7 +15,7 @@ A demo project to read all SteamDeck input (including trackpad and gyro) via Ste
 3. Put `redistributable_bin/libsteam_api.so` in the PATH (e.g. `/usr/lib`).
 4. Copy `kontroller.vdf` into `/home/deck/.local/share/Steam/controller_config` (create the folder if it doesn't exist), rename it to `game_actions_480.vdf`.
 5. Run `kontroller` on SteamDeck. This should open a new window, but your input can't be captured now. Close the window.
-6. Start steam client on the Desktop Mode. In your library, you should find a game called `Spacewar`. [Edit it's input mapping](https://partner.steamgames.com/doc/features/steam_controller/getting_started_for_devs#14).
+6. Start steam client on the Desktop Mode. In your library, you should find a game called `Spacewar`. [Edit its input mapping](https://partner.steamgames.com/doc/features/steam_controller/getting_started_for_devs#14).
 7. Run `kontroller` again, you should get the input you want.
 
 ## Build
@@ -32,11 +32,11 @@ cargo build --release
 - Why not to use a game engine?
   - This app doesn't need high quality UI update, but need to read input as fast as possible.
   - Besides, I want the built binary to be as small as possible.
-- What UI library do you use?
+- What GUI library do you use?
   - [iced](https://github.com/iced-rs/iced).
-  - Steam Input requires a window to be focused to read input, so a UI library is required.
-  - WebView-based UI lib seems not working. Tested with [Tauri](https://tauri.app/) and [web-view](https://github.com/Boscop/web-view)
-  - The UI process should be the same as the main process.
+  - Steam Input requires a window to be focused to read input, so a GUI library is required.
+  - WebView-based GUI lib seems not working. Tested with [Tauri](https://tauri.app/) and [web-view](https://github.com/Boscop/web-view)
+  - The GUI process should be the same as the main process.
 - Why the name is `Spacewar` and the app id is 480?
   - 480 is a commonly used app id for testing for steamworks developers. The name `Spacewar` is the name for the app with app id 480.
 - I tried to start the executable file on SteamDeck but no window shows up.
