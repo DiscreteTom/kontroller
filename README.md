@@ -20,7 +20,7 @@ A demo project to read all SteamDeck input (including trackpad and gyro) via Ste
 
 ## Build
 
-> **Note**
+> [!NOTE]
 > You'd better build the project on SteamDeck.
 
 ```bash
