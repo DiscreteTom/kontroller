@@ -2,7 +2,7 @@
 
 [![version](https://img.shields.io/github/v/tag/DiscreteTom/kontroller?label=release&style=flat-square)](https://github.com/DiscreteTom/kontroller/releases/latest)
 ![license](https://img.shields.io/github/license/DiscreteTom/kontroller?style=flat-square)
-[![rust](https://img.shields.io/badge/built_with-rust-DEA584?style=flat-square)](https://github.com/DiscreteTom/retsac)
+![rust](https://img.shields.io/badge/built_with-rust-DEA584?style=flat-square)
 
 A demo project to read all SteamDeck input (including trackpad and gyro) via SteamInput without using a game engine.
 
